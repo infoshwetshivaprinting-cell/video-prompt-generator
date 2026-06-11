@@ -1,33 +1,58 @@
-# video-prompt-generato
-Project Plan
+# Video Prompt Generator — YouTube Shorts
 
-Repository Name: video-prompt-generator
+This repository provides tools to generate short vertical videos (YouTube Shorts) from text prompts. It includes components for generating voiceovers, creating vertical images, composing videos, and a Streamlit web UI to run everything from a browser.
 
-Description: A free and open-source tool to generate videos from text prompts using free resources, with a focus on gaining YouTube reach.
+## What's included
 
+- streamlit_app.py — Browser UI (Streamlit) to generate Shorts
+- image_generator.py — Creates 9:16 images from prompts
+- video_editor.py — Composes images and audio into a vertical video
+- seo_helper.py — Generates title/description/keywords suggestions
+- logger.py — Simple logging utility
+- requirements.txt — Python dependencies
+- test_logger.py — Unit tests for the logger
 
-Features:
+## Quickstart (local)
 
-1. Text-to-Speech: Use free Python libraries like gTTS (Google Text-to-Speech) for audio generation.
+1. Clone the repo:
+   git clone https://github.com/infoshwetshivaprinting-cell/video-prompt-generator.git
+   cd video-prompt-generator
 
-2. Image Generation:
+2. Create a virtual environment and install dependencies:
+   python -m venv .venv
 
-• Use tools like DALLE-PyTorch for offline image generation.
+   # macOS / Linux
+   source .venv/bin/activate
 
-• Alternatively, stable diffusion models such as Stable Diffusion WebUI (open source).
+   # Windows (PowerShell)
+   .\.venv\Scripts\Activate.ps1
 
-3. Video Editing:
+   pip install -r requirements.txt
 
-• Stitch audio and images into a video using moviepy, a Python video editing library.
+3. Run the Streamlit app:
+   streamlit run streamlit_app.py
 
-4. SEO Optimization:
+4. Open the URL shown by Streamlit in your browser. Use the UI to enter a prompt, generate images, voiceover, and the Short.
 
-• Analyze keywords and descriptions to enhance YouTube visibility. Use a Python package like pytube for analysis of trending topics.
+## Deploy to Streamlit Community Cloud
 
-5. Video Upload (Manual):
+1. Make the repository public (Settings → General → Change repository visibility → Make public) and ensure there are no secrets in the repo.
+2. Sign in to https://share.streamlit.io with your GitHub account.
+3. Click "New app" → select this repository, the `main` branch, and `streamlit_app.py` as the main file → Deploy.
 
-• Automate metadata suggestions for YouTube but upload manually to avoid paid APIs.
+Streamlit will install dependencies from `requirements.txt` and deploy the app.
 
-6. Continuous Updates:
+## Tests / CI
 
-• Maintain and enhance tools over time with community support.
+A GitHub Actions workflow is included to run unit tests (`pytest`) on push and pull requests. Tests can also be run locally with:
+
+    python -m pytest -q
+
+## Security & Notes
+
+- Do NOT commit API keys or other secrets. Use environment variables or GitHub secrets for deployments that require credentials.
+- MoviePy can be CPU-intensive. For production or high-volume use, consider offloading encoding to a more capable environment.
+
+## License
+
+Add your preferred license file (e.g., MIT LICENSE) if you plan to make this repo public.
