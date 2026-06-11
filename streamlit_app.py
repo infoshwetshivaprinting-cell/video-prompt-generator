@@ -160,7 +160,12 @@ if st.button("Generate Short"):
                     log_info(f"Video creation returned: {created_path}")
                 except Exception as e:
                     log_error(f"create_video raised an exception: {e}")
+                    import traceback
+                    error_details = traceback.format_exc()
+                    log_error(error_details)
                     st.error(f"Video creation error: {e}")
+                    with st.expander("🔧 Video Error Details"):
+                        st.code(error_details)
                     created_path = None
 
             # Determine the actual output file

@@ -1,6 +1,7 @@
 from typing import List
 import os
 from pathlib import Path
+import sys
 
 
 def create_video(image_files: List[str], audio_path: str, output_path: str, prompt: str = None):
@@ -10,14 +11,21 @@ def create_video(image_files: List[str], audio_path: str, output_path: str, prom
     dependencies are missing in the environment. The function returns the path 
     to the created asset (MP4 or GIF).
     """
+    moviepy_error = None
+    has_moviepy = False
+    
     try:
         from moviepy.editor import ImageClip, concatenate_videoclips, AudioFileClip
         has_moviepy = True
     except Exception as e:
-        has_moviepy = False
-        moviepy_import_error = str(e)
+        moviepy_error = str(e)
+        print(f"[VIDEO_EDITOR] MoviePy import failed: {moviepy_error}", file=sys.stderr)
 
-    if has_moviepy and image_files:
+    if not image_files:
+        print(f"[VIDEO_EDITOR] No image files provided", file=sys.stderr)
+        raise RuntimeError("No image files provided for video creation.")
+
+    if has_moviepy:
         try:
             duration_per_image = 2
             clips = []
@@ -29,19 +37,21 @@ def create_video(image_files: List[str], audio_path: str, output_path: str, prom
             if not clips:
                 raise RuntimeError("No valid images found for video creation.")
             
+            print(f"[VIDEO_EDITOR] Creating video with {len(clips)} clips...", file=sys.stderr)
             final = concatenate_videoclips(clips, method="compose")
 
             # Attach audio if available
             if audio_path and os.path.exists(audio_path):
                 try:
+                    print(f"[VIDEO_EDITOR] Attaching audio from {audio_path}", file=sys.stderr)
                     audio = AudioFileClip(audio_path)
                     final = final.set_audio(audio)
                 except Exception as audio_error:
-                    # Continue without audio if loading fails
-                    pass
+                    print(f"[VIDEO_EDITOR] Warning: Could not attach audio: {audio_error}", file=sys.stderr)
 
             # Write the video file with safe parameters
             os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
+            print(f"[VIDEO_EDITOR] Writing video to {output_path}", file=sys.stderr)
             final.write_videofile(
                 output_path, 
                 codec='libx264', 
@@ -49,15 +59,19 @@ def create_video(image_files: List[str], audio_path: str, output_path: str, prom
                 fps=24, 
                 verbose=False, 
                 logger=None,
-                preset='medium'
+                preset='fast',
+                threads=2
             )
             final.close()
+            print(f"[VIDEO_EDITOR] Video creation successful: {output_path}", file=sys.stderr)
             return output_path
         except Exception as e:
-            # If moviepy fails, fall back to GIF
-            pass
+            print(f"[VIDEO_EDITOR] MoviePy video creation failed: {e}", file=sys.stderr)
+            import traceback
+            traceback.print_exc(file=sys.stderr)
 
     # Fallback: create an animated GIF (no audio) using Pillow
+    print(f"[VIDEO_EDITOR] Falling back to GIF creation (moviepy available: {has_moviepy})", file=sys.stderr)
     try:
         from PIL import Image
     except Exception as e:
@@ -71,7 +85,8 @@ def create_video(image_files: List[str], audio_path: str, output_path: str, prom
             try:
                 im = Image.open(f).convert('RGB')
                 imgs.append(im)
-            except Exception:
+            except Exception as e:
+                print(f"[VIDEO_EDITOR] Could not load image {f}: {e}", file=sys.stderr)
                 continue
 
     if not imgs:
@@ -80,6 +95,8 @@ def create_video(image_files: List[str], audio_path: str, output_path: str, prom
     gif_path = output_path.rsplit('.', 1)[0] + '.gif'
     os.makedirs(os.path.dirname(gif_path) or ".", exist_ok=True)
     
+    print(f"[VIDEO_EDITOR] Creating GIF with {len(imgs)} frames at {gif_path}", file=sys.stderr)
     duration_ms = 2000
     imgs[0].save(gif_path, save_all=True, append_images=imgs[1:], duration=duration_ms, loop=0)
+    print(f"[VIDEO_EDITOR] GIF creation successful: {gif_path}", file=sys.stderr)
     return gif_path
