@@ -1,7 +1,8 @@
-"""TTS provider wrappers with placeholder hooks for paid providers.
+"""TTS provider wrappers with placeholder hooks and free offline option (pyttsx3).
 
 Supported providers:
 - gtts (default, local, free)
+- pyttsx3 (offline, free)
 - elevenlabs (placeholder using API key)
 - google (placeholder using Google Cloud TTS client)
 
@@ -27,6 +28,25 @@ def generate_voiceover(prompt: str, output_path: str, provider: Optional[str] = 
         tts.save(output_path)
         return output_path
 
+    if provider == "pyttsx3":
+        try:
+            import pyttsx3
+        except Exception as e:
+            raise RuntimeError("pyttsx3 not installed. Install with 'pip install pyttsx3'.") from e
+        engine = pyttsx3.init()
+        # Optional voice selection
+        voice_name = kwargs.get("voice_name")
+        if voice_name:
+            voices = engine.getProperty('voices')
+            for v in voices:
+                if voice_name.lower() in v.name.lower():
+                    engine.setProperty('voice', v.id)
+                    break
+        # Save to file
+        engine.save_to_file(prompt, output_path)
+        engine.runAndWait()
+        return output_path
+
     if provider == "elevenlabs":
         # Placeholder: a minimal example using ElevenLabs REST API
         api_key = os.getenv("ELEVENLABS_API_KEY")
@@ -46,7 +66,6 @@ def generate_voiceover(prompt: str, output_path: str, provider: Optional[str] = 
         resp = requests.post(url, json=payload, headers=headers)
         if resp.status_code != 200:
             raise RuntimeError(f"ElevenLabs TTS request failed: {resp.status_code} {resp.text}")
-        # The API may return audio content or a URL depending on API version — adjust as needed.
         with open(output_path, "wb") as f:
             f.write(resp.content)
         return output_path
@@ -57,7 +76,6 @@ def generate_voiceover(prompt: str, output_path: str, provider: Optional[str] = 
             from google.cloud import texttospeech
         except Exception as e:
             raise RuntimeError("google-cloud-texttospeech not installed. Install with 'pip install google-cloud-texttospeech'.") from e
-        # Ensure credentials path is set in GOOGLE_APPLICATION_CREDENTIALS
         client = texttospeech.TextToSpeechClient()
         synthesis_input = texttospeech.SynthesisInput(text=prompt)
         voice = texttospeech.VoiceSelectionParams(language_code=kwargs.get("language_code", "en-US"), name=kwargs.get("voice_name"))
