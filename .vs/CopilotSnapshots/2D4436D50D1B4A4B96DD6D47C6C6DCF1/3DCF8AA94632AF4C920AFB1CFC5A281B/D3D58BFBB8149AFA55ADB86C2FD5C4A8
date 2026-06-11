@@ -1,0 +1,127 @@
+﻿#!/usr/bin/env python
+"""Diagnostic script to test video creation locally and identify issues."""
+
+import os
+import sys
+import tempfile
+from pathlib import Path
+
+def diagnose():
+    """Run diagnostics on video creation dependencies and functionality."""
+    print("=" * 60)
+    print("VIDEO CREATION DIAGNOSTIC TOOL")
+    print("=" * 60)
+    
+    # Test 1: Check Python environment
+    print("\n[1] Python Environment:")
+    print(f"    Python version: {sys.version}")
+    print(f"    Platform: {sys.platform}")
+    print(f"    Executable: {sys.executable}")
+    
+    # Test 2: Check moviepy
+    print("\n[2] MoviePy Library:")
+    try:
+        from moviepy.editor import ImageClip, concatenate_videoclips, AudioFileClip
+        print("    ✓ MoviePy available")
+        import moviepy
+        print(f"    ✓ Version: {moviepy.__version__}")
+    except Exception as e:
+        print(f"    ✗ MoviePy import failed: {e}")
+    
+    # Test 3: Check PIL
+    print("\n[3] PIL/Pillow Library:")
+    try:
+        from PIL import Image
+        print("    ✓ PIL available")
+        from PIL import __version__ as pil_version
+        print(f"    ✓ Version: {pil_version}")
+    except Exception as e:
+        print(f"    ✗ PIL import failed: {e}")
+    
+    # Test 4: Check ffmpeg
+    print("\n[4] FFmpeg:")
+    try:
+        import subprocess
+        result = subprocess.run(['ffmpeg', '-version'], capture_output=True, text=True, timeout=5)
+        if result.returncode == 0:
+            version_line = result.stdout.split('\n')[0]
+            print(f"    ✓ FFmpeg available: {version_line}")
+        else:
+            print(f"    ✗ FFmpeg not found or error: {result.stderr}")
+    except FileNotFoundError:
+        print("    ✗ FFmpeg not installed or not in PATH")
+    except Exception as e:
+        print(f"    ✗ FFmpeg check failed: {e}")
+    
+    # Test 5: Create test image and GIF
+    print("\n[5] Image/GIF Creation Test:")
+    try:
+        from PIL import Image
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Create test images
+            for i in range(3):
+                img = Image.new('RGB', (1280, 720), color=(73, 109, 137))
+                img.save(os.path.join(tmpdir, f"test_{i}.jpg"))
+            
+            test_images = [os.path.join(tmpdir, f"test_{i}.jpg") for i in range(3)]
+            gif_path = os.path.join(tmpdir, "test.gif")
+            
+            imgs = [Image.open(f).convert('RGB') for f in test_images]
+            imgs[0].save(gif_path, save_all=True, append_images=imgs[1:], duration=2000, loop=0)
+            
+            if os.path.exists(gif_path) and os.path.getsize(gif_path) > 0:
+                print(f"    ✓ GIF creation successful ({os.path.getsize(gif_path)} bytes)")
+            else:
+                print("    ✗ GIF creation failed")
+    except Exception as e:
+        print(f"    ✗ Image/GIF test failed: {e}")
+    
+    # Test 6: Create test video with moviepy
+    print("\n[6] MoviePy Video Creation Test:")
+    try:
+        from moviepy.editor import ImageClip, concatenate_videoclips
+        from PIL import Image
+        
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Create test images
+            for i in range(3):
+                img = Image.new('RGB', (1280, 720), color=(73, 109, 137))
+                img.save(os.path.join(tmpdir, f"test_{i}.jpg"))
+            
+            test_images = [os.path.join(tmpdir, f"test_{i}.jpg") for i in range(3)]
+            output_path = os.path.join(tmpdir, "test.mp4")
+            
+            print("    • Creating clips...")
+            clips = [ImageClip(img).set_duration(2) for img in test_images]
+            print(f"    • Concatenating {len(clips)} clips...")
+            final = concatenate_videoclips(clips, method="compose")
+            
+            print("    • Writing video file (preset='medium')...")
+            final.write_videofile(
+                output_path, 
+                codec='libx264', 
+                audio_codec='aac', 
+                fps=24, 
+                verbose=False,
+                logger=None,
+                preset='medium'
+            )
+            final.close()
+            
+            if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
+                print(f"    ✓ MP4 creation successful ({os.path.getsize(output_path)} bytes)")
+            else:
+                print("    ✗ MP4 creation failed")
+    except ImportError as e:
+        print(f"    ⊘ MoviePy not available, skipping: {e}")
+    except Exception as e:
+        print(f"    ✗ MoviePy video test failed: {e}")
+        import traceback
+        traceback.print_exc()
+    
+    print("\n" + "=" * 60)
+    print("Diagnostics complete!")
+    print("=" * 60)
+
+if __name__ == "__main__":
+    diagnose()

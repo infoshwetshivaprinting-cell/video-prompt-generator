@@ -1,0 +1,14 @@
+﻿streamlit==1.29.0
+moviepy==1.0.3
+Pillow>=9.5.0,<10.0.0
+gTTS==2.3.2
+pytest==7.4.0
+python-dotenv==1.0.0
+requests==2.31.0
+imageio>=2.31.1
+imageio-ffmpeg>=0.4.8
+setuptools>=65.5.0
+wheel
+# Additional dependencies for reliable video processing
+numpy>=1.24.0
+decorator>=5.1.0
