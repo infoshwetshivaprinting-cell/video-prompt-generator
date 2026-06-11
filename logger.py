@@ -1,28 +1,21 @@
-import logging
 import os
+from datetime import datetime
 
-# Configure logging settings
-LOG_FILE = os.path.join("logs", "video_generator.log")
-os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
-logging.basicConfig(
-    filename=LOG_FILE,
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+LOG_FILE = os.path.join(os.getcwd(), "output", "app.log")
 
-def log_info(message):
-    logging.info(message)
+def _ensure_log_dir():
+    os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 
-def log_error(message):
-    logging.error(message)
+def log_info(msg: str):
+    _ensure_log_dir()
+    line = f"[{datetime.utcnow().isoformat()}] INFO: {msg}\n"
+    with open(LOG_FILE, "a") as f:
+        f.write(line)
+    print(line, end='')
 
-# Example usage
-if __name__ == "__main__":
-    log_info("Video generation started.")
-    try:
-        # Simulate process
-        print("Processing...")
-    except Exception as e:
-        log_error(f"Error: {e}")
-    finally:
-        log_info("Video generation ended.")
+def log_error(msg: str):
+    _ensure_log_dir()
+    line = f"[{datetime.utcnow().isoformat()}] ERROR: {msg}\n"
+    with open(LOG_FILE, "a") as f:
+        f.write(line)
+    print(line, end='')

@@ -1,9 +1,11 @@
+# Byte-compiled / env
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+.env.*
 .venv/
 venv/
-__pycache__/
-*.pyc
+*.log
 output/
-logs/
-.env
 .DS_Store
-*.egg-info/

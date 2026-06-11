@@ -1,20 +1,9 @@
-import os
-
-def generate_seo_metadata(prompt):
-    """Generate SEO metadata for YouTube Shorts."""
-    keywords = [word for word in prompt.split() if len(word) > 3]
-    title = f"{prompt[:50]}..." if len(prompt) > 50 else prompt
-    description = f"This is a YouTube Short created from the prompt: {prompt}"
-
+def generate_seo_metadata(prompt: str):
+    title = prompt.strip().split('\n')[0][:60] if prompt else "Video"
+    description = (prompt.strip()[:200] + '...') if prompt and len(prompt) > 200 else (prompt or "")
+    keywords = ", ".join(list({w.strip().lower() for w in (prompt or '').split() if len(w) > 3})[:10])
     return {
-        "title": title,
+        "title": title or "Video Prompt",
         "description": description,
-        "keywords": ", ".join(keywords)
+        "keywords": keywords
     }
-
-# Example usage
-if __name__ == "__main__":
-    prompt = "Create engaging YouTube Shorts with Open Source Tools!"
-    metadata = generate_seo_metadata(prompt)
-    print("Generated Metadata:")
-    print(metadata)
