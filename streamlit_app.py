@@ -60,29 +60,65 @@ if st.button("Generate Short"):
             st.success("Images created")
             log_info(f"Created {len(image_files)} images")
 
-            output_video = os.path.join(OUTPUT_FOLDER, "short_generated.mp4")
+            default_output = os.path.join(OUTPUT_FOLDER, "short_generated.mp4")
+            created_path = None
             with st.spinner("Creating video (this may take a while)..."):
-                create_video(image_files, audio_path, output_video, prompt)
-            st.success("Video created")
-            log_info(f"Video saved at {output_video}")
+                try:
+                    created_path = create_video(image_files, audio_path, default_output, prompt)
+                except Exception as e:
+                    # Log and keep going to handle fallback or show error to user
+                    log_error(f"create_video raised an exception: {e}")
+                    created_path = None
 
-            # Show thumbnails
-            st.subheader("Generated images")
-            for img in image_files:
-                st.image(img, use_column_width=True)
+            output_video = created_path if created_path else default_output
+            if not os.path.exists(output_video):
+                # If the expected output doesn't exist, try to find any generated file in OUTPUT_FOLDER
+                candidates = [os.path.join(OUTPUT_FOLDER, f) for f in os.listdir(OUTPUT_FOLDER)]
+                candidates = [c for c in candidates if os.path.isfile(c) and os.path.getsize(c) > 0]
+                # Prefer .mp4, then .gif
+                mp4s = [c for c in candidates if c.lower().endswith('.mp4')]
+                gifs = [c for c in candidates if c.lower().endswith('.gif')]
+                if mp4s:
+                    output_video = sorted(mp4s, key=os.path.getmtime)[-1]
+                elif gifs:
+                    output_video = sorted(gifs, key=os.path.getmtime)[-1]
 
-            # Show download button
-            st.subheader("Download Video")
-            with open(output_video, "rb") as f:
-                video_bytes = f.read()
-            st.download_button("Download the Short", data=video_bytes, file_name="short_generated.mp4", mime="video/mp4")
+            if not os.path.exists(output_video):
+                st.error("Video creation failed — output file not found.")
+                log_error(f"Expected output not found: {output_video}")
+            else:
+                st.success("Video created")
+                log_info(f"Video saved at {output_video}")
 
-            # Show SEO metadata suggestions
-            st.subheader("SEO Suggestions")
-            meta = generate_seo_metadata(prompt)
-            st.text_input("Title", value=meta["title"]) 
-            st.text_area("Description", value=meta["description"], height=120)
-            st.text_input("Keywords (comma-separated)", value=meta["keywords"]) 
+                # Display the created media inline
+                filename = os.path.basename(output_video)
+                if filename.lower().endswith('.gif'):
+                    try:
+                        st.image(output_video, caption=filename, use_column_width=True)
+                    except Exception:
+                        pass
+                else:
+                    try:
+                        st.video(output_video)
+                    except Exception:
+                        pass
+
+                # Prepare download
+                try:
+                    with open(output_video, "rb") as f:
+                        media_bytes = f.read()
+                    mime = "video/mp4" if filename.lower().endswith('.mp4') else ("image/gif" if filename.lower().endswith('.gif') else "application/octet-stream")
+                    st.download_button(f"Download the Short ({filename})", data=media_bytes, file_name=filename, mime=mime)
+                except Exception as e:
+                    st.error(f"Could not prepare download: {e}")
+                    log_error(f"Download preparation failed: {e}")
+
+                # Show SEO metadata suggestions
+                st.subheader("SEO Suggestions")
+                meta = generate_seo_metadata(prompt)
+                st.text_input("Title", value=meta["title"]) 
+                st.text_area("Description", value=meta["description"], height=120)
+                st.text_input("Keywords (comma-separated)", value=meta["keywords"]) 
 
         except Exception as e:
             st.error(f"An error occurred: {e}")
