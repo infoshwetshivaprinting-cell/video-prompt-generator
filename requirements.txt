@@ -5,4 +5,5 @@ gTTS==2.3.2
 pytest==7.4.0
 python-dotenv==1.0.0
 requests==2.31.0
-pyttsx3==2.90
+imageio==2.31.1
+imageio-ffmpeg==0.4.8
