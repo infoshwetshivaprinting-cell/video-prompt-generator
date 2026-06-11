@@ -140,63 +140,99 @@ if st.button("Generate Short"):
 
             with st.spinner("Creating images..."):
                 image_files = create_images(prompt, num_images, OUTPUT_FOLDER)
-            st.success("Images created")
+            st.success(f"Images created ({len(image_files)} images)")
             log_info(f"Created {len(image_files)} images")
+
+            # Display generated images
+            with st.expander("📷 View Generated Images", expanded=False):
+                cols = st.columns(min(3, len(image_files)))
+                for idx, img_file in enumerate(image_files):
+                    if os.path.exists(img_file):
+                        with cols[idx % len(cols)]:
+                            st.image(img_file, caption=os.path.basename(img_file), use_column_width=True)
 
             default_output = os.path.join(OUTPUT_FOLDER, "short_generated.mp4")
             created_path = None
+            
             with st.spinner("Creating video (this may take a while)..."):
                 try:
                     created_path = create_video(image_files, audio_path, default_output, prompt)
+                    log_info(f"Video creation returned: {created_path}")
                 except Exception as e:
                     log_error(f"create_video raised an exception: {e}")
+                    st.error(f"Video creation error: {e}")
                     created_path = None
 
-            output_video = created_path if created_path else default_output
-            if not os.path.exists(output_video):
-                candidates = [os.path.join(OUTPUT_FOLDER, f) for f in os.listdir(OUTPUT_FOLDER)]
-                candidates = [c for c in candidates if os.path.isfile(c) and os.path.getsize(c) > 0]
-                mp4s = [c for c in candidates if c.lower().endswith('.mp4')]
-                gifs = [c for c in candidates if c.lower().endswith('.gif')]
-                if mp4s:
-                    output_video = sorted(mp4s, key=os.path.getmtime)[-1]
-                elif gifs:
-                    output_video = sorted(gifs, key=os.path.getmtime)[-1]
+            # Determine the actual output file
+            output_video = created_path if created_path and os.path.exists(created_path) else None
+            
+            if not output_video:
+                # Fallback: search for any video or GIF files
+                try:
+                    all_files = os.listdir(OUTPUT_FOLDER)
+                    mp4s = [os.path.join(OUTPUT_FOLDER, f) for f in all_files if f.lower().endswith('.mp4') and os.path.getsize(os.path.join(OUTPUT_FOLDER, f)) > 0]
+                    gifs = [os.path.join(OUTPUT_FOLDER, f) for f in all_files if f.lower().endswith('.gif') and os.path.getsize(os.path.join(OUTPUT_FOLDER, f)) > 0]
+                    
+                    if mp4s:
+                        output_video = sorted(mp4s, key=os.path.getmtime)[-1]
+                    elif gifs:
+                        output_video = sorted(gifs, key=os.path.getmtime)[-1]
+                except Exception as search_error:
+                    log_error(f"Fallback file search failed: {search_error}")
 
-            if not os.path.exists(output_video):
-                st.error("Video creation failed — output file not found.")
-                log_error(f"Expected output not found: {output_video}")
+            if not output_video or not os.path.exists(output_video):
+                st.error("❌ Video creation failed — no output file found.")
+                log_error(f"Expected output not found. Created path: {created_path}, Default: {default_output}")
+                
+                # Debug info
+                with st.expander("🔧 Debug Information"):
+                    st.write(f"**Created path returned:** {created_path}")
+                    st.write(f"**Expected path:** {default_output}")
+                    st.write(f"**Output folder contents:**")
+                    try:
+                        for f in os.listdir(OUTPUT_FOLDER):
+                            file_path = os.path.join(OUTPUT_FOLDER, f)
+                            size_kb = os.path.getsize(file_path) / 1024
+                            st.write(f"  - {f} ({size_kb:.1f} KB)")
+                    except Exception:
+                        st.write("  (Could not read folder)")
             else:
-                st.success("Video created")
+                st.success("✅ Video created successfully!")
                 log_info(f"Video saved at {output_video}")
 
                 filename = os.path.basename(output_video)
+                
+                # Display the video/GIF
+                st.subheader("🎬 Your Generated Short")
                 if filename.lower().endswith('.gif'):
-                    try:
-                        st.image(output_video, caption=filename, use_column_width=True)
-                    except Exception:
-                        pass
+                    st.image(output_video, caption=filename, use_column_width=True)
                 else:
-                    try:
-                        st.video(output_video)
-                    except Exception:
-                        pass
+                    st.video(output_video)
 
+                # Download button
                 try:
                     with open(output_video, "rb") as f:
                         media_bytes = f.read()
                     mime = "video/mp4" if filename.lower().endswith('.mp4') else ("image/gif" if filename.lower().endswith('.gif') else "application/octet-stream")
-                    st.download_button(f"Download the Short ({filename})", data=media_bytes, file_name=filename, mime=mime)
+                    st.download_button(
+                        label=f"⬇️ Download {filename}",
+                        data=media_bytes,
+                        file_name=filename,
+                        mime=mime
+                    )
                 except Exception as e:
                     st.error(f"Could not prepare download: {e}")
                     log_error(f"Download preparation failed: {e}")
 
-                st.subheader("SEO Suggestions")
+                # SEO Suggestions
+                st.subheader("📊 SEO Suggestions")
                 meta = generate_seo_metadata(prompt)
-                st.text_input("Title", value=meta["title"]) 
-                st.text_area("Description", value=meta["description"], height=120)
-                st.text_input("Keywords (comma-separated)", value=meta["keywords"]) 
+                st.text_input("Title", value=meta["title"], disabled=True)
+                st.text_area("Description", value=meta["description"], height=120, disabled=True)
+                st.text_input("Keywords (comma-separated)", value=meta["keywords"], disabled=True)
 
         except Exception as e:
-            st.error(f"An error occurred: {e}")
+            st.error(f"❌ An error occurred: {e}")
             log_error(str(e))
+            with st.expander("🔧 Error Details"):
+                st.write(str(e))
