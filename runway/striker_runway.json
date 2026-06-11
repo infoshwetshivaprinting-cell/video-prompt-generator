@@ -1,0 +1,76 @@
+{
+  "sequence_name": "Striker Right Flank - Runway",
+  "items": [
+    {
+      "id": "shot01",
+      "type": "image",
+      "duration": 0.8,
+      "prompt": "Cinematic broadcast-style football match, photorealistic 4K. A striker in a red-and-white jersey sprints down the right flank. Wide composition, emphasize field breadth and crowd, low-angle tracking camera, motion blur",
+      "aspect": "16:9",
+      "resolution": "1920x1080",
+      "seed": 12345,
+      "guidance": 8.0,
+      "steps": 30
+    },
+    {
+      "id": "shot02",
+      "type": "image",
+      "duration": 1.2,
+      "prompt": "Medium close, low-angle, rim lighting on jersey, motion blur on ball, waist-height tracking",
+      "aspect": "16:9",
+      "resolution": "1920x1080",
+      "seed": 23456,
+      "guidance": 9.0,
+      "steps": 36
+    },
+    {
+      "id": "shot03",
+      "type": "image",
+      "duration": 1.5,
+      "prompt": "Over-the-shoulder toward goal, player cutting inside, curved ball trajectory emphasized, cinematic lighting",
+      "aspect": "16:9",
+      "resolution": "1920x1080",
+      "seed": 34567,
+      "guidance": 9.0,
+      "steps": 36
+    },
+    {
+      "id": "shot04",
+      "type": "image",
+      "duration": 1.0,
+      "prompt": "Extreme close-up on boot striking ball with micro-details, high shutter clarity on contact, micro dust/spark",
+      "aspect": "16:9",
+      "resolution": "1280x720",
+      "seed": 45678,
+      "guidance": 10.0,
+      "steps": 40
+    },
+    {
+      "id": "shot05",
+      "type": "image",
+      "duration": 2.0,
+      "prompt": "Long follow shot, ball curve emphasized, top-corner trajectory, crowd bokeh, smooth tracking",
+      "aspect": "16:9",
+      "resolution": "1920x1080",
+      "seed": 56789,
+      "guidance": 9.0,
+      "steps": 36
+    },
+    {
+      "id": "shot06",
+      "type": "image",
+      "duration": 1.5,
+      "prompt": "Goal-frame, high drama, freeze or slow-motion, scoreboard overlay optional, cinematic grade",
+      "aspect": "16:9",
+      "resolution": "1920x1080",
+      "seed": 67890,
+      "guidance": 8.5,
+      "steps": 30
+    }
+  ],
+  "composition": {
+    "fps": 24,
+    "final_format": "mp4",
+    "instructions": "Generate each shot image (or short sequence), reframe/crop to vertical for Shorts, assemble clips in order, add voiceover and ambience, apply LUT and color grade"
+  }
+}

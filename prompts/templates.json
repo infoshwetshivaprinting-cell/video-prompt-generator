@@ -1,0 +1,46 @@
+[
+  {
+    "name": "Broadcast 4K - Default",
+    "prompt": "Cinematic broadcast-style football match, photorealistic 4K ultra-high detail. A striker in a vibrant red-and-white jersey sprints down the right flank of a perfectly manicured green pitch under bright stadium floodlights. Low-angle tracking camera follows the player at knee/waist level, dynamic motion blur on the ball and legs, shallow depth of field with bokeh on crowd, dramatic lens flare from floodlights, packed 80,000-seat stadium with green-and-white seating tiers visible, roaring crowd, realistic sweat and fabric detail, wind-blown jersey, strong rim lighting, studio-grade sports cinematography, Unreal Engine 5 quality lighting and global illumination, filmic color grading, 85mm lens, f/1.8, high dynamic range, hyper-real details. No logos or watermarks.",
+    "negatives": "lowres, watermark, text, logo, jersey-branding, deformed anatomy, extra limbs, cartoon, oversaturated skin, duplicate-objects, jpeg-artifacts",
+    "aspect": "16:9",
+    "resolution": "3840x2160",
+    "guidance": 9.0,
+    "sampler": "DPM++",
+    "steps": 40,
+    "notes": "Use SDXL or high-quality diffusion model for photoreal detail. Avoid brand names."
+  },
+  {
+    "name": "Vertical Short - Cinematic",
+    "prompt": "Vertical cinematic sports shot for mobile: striker in red-and-white jersey sprints down the right flank, low-angle tracking camera, motion blur on ball, stadium floodlights and lens flare, shallow depth of field with crowd bokeh, vibrant green pitch, close dynamic composition, Unreal Engine 5 quality lighting, photorealistic, ultra-detailed.",
+    "negatives": "lowres, watermark, text, logo, jersey-branding, cartoon, deformed anatomy, oversharpening",
+    "aspect": "9:16",
+    "resolution": "2160x3840",
+    "guidance": 9.5,
+    "sampler": "DPM++",
+    "steps": 36,
+    "notes": "Optimized for mobile framing and high vertical detail."
+  },
+  {
+    "name": "Wet Pitch - Night Rain",
+    "prompt": "Cinematic broadcast-style football match at night with light rain, photorealistic 4K. A striker in a vibrant red-and-white jersey sprints down the right flank on a wet, reflective pitch. Stadium floodlights create dramatic reflections and glints on the surface. Low-angle tracking camera with motion blur on ball and splashing water, droplets visible, volumetric light beams, strong rim lighting, packed 80,000-seat stadium, crowd blurred with DOF bokeh, fabric and wet textures highly detailed, cinematic color grade, film grain, Unreal Engine quality lighting.",
+    "negatives": "lowres, watermark, text, logo, cartoon, deformed anatomy, oversaturated colors, motion artifacts",
+    "aspect": "16:9",
+    "resolution": "3840x2160",
+    "guidance": 9.5,
+    "sampler": "DPM++",
+    "steps": 44,
+    "notes": "Add wetness/reflection emphasis and raindrop microdetails. Use motion blur plus splash particle details."
+  },
+  {
+    "name": "Golden Hour - Warm Lighting",
+    "prompt": "Cinematic broadcast-style football match during golden hour, photorealistic. A striker in a vibrant red-and-white jersey sprints down the right flank across a perfectly manicured pitch bathed in warm, low-angle golden light. Lens flare and cinematic sun shafts, shallow depth of field with warm bokeh on the crowd, dramatic backlight and rimlight, realistic fabric detail and hair motion, packed stadium in soft warm tones, filmic color grading, Unreal Engine quality lighting and global illumination, 85mm focal feel.",
+    "negatives": "lowres, watermark, text, logo, oversaturated colors, cartoon, deformed anatomy",
+    "aspect": "16:9",
+    "resolution": "3840x2160",
+    "guidance": 8.5,
+    "sampler": "DPM++",
+    "steps": 38,
+    "notes": "Use warm cinematic LUT; emphasize rim lighting and volumetric sun shafts."
+  }
+]

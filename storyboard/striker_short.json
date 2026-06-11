@@ -1,0 +1,143 @@
+{
+  "title": "Striker Right Flank — 8s Cinematic Short",
+  "total_duration": 8.0,
+  "frame_rate": 24,
+  "output_base": "output/short_generated",
+  "shots": [
+    {
+      "id": 1,
+      "label": "Wide tracking - low angle",
+      "start": 0.0,
+      "end": 0.8,
+      "duration": 0.8,
+      "camera": "low-angle tracking from right sideline, wide framing",
+      "motion": "track with striker, moderate motion blur on legs",
+      "base_prompt": "Cinematic broadcast-style football match, photorealistic 4K ultra-high detail. A striker in a vibrant red-and-white jersey sprints down the right flank of a perfectly manicured green pitch under bright stadium floodlights.",
+      "prompt_modifier": "wide composition, emphasize field breadth and crowd, low-angle tracking camera, motion blur",
+      "render_settings": {
+        "aspect": "16:9",
+        "resolution": "1920x1080",
+        "guidance": 8.0,
+        "sampler": "DPM++",
+        "steps": 30
+      },
+      "output_pattern": "shot01_wide_{seed}.png"
+    },
+    {
+      "id": 2,
+      "label": "Medium close tracking",
+      "start": 0.8,
+      "end": 2.0,
+      "duration": 1.2,
+      "camera": "waist/knee height tracking, medium close",
+      "motion": "camera tracks at player speed, slight handheld shake",
+      "base_prompt": "Cinematic broadcast-style football match, photorealistic. A striker in a red-and-white jersey sprints down the right flank.",
+      "prompt_modifier": "medium close, low-angle, rim lighting on jersey, motion blur on ball",
+      "render_settings": {
+        "aspect": "16:9",
+        "resolution": "1920x1080",
+        "guidance": 9.0,
+        "sampler": "DPM++",
+        "steps": 36
+      },
+      "output_pattern": "shot02_medium_{seed}.png"
+    },
+    {
+      "id": 3,
+      "label": "Over-the-shoulder cut inside",
+      "start": 2.0,
+      "end": 3.5,
+      "duration": 1.5,
+      "camera": "over-the-shoulder toward goal, focusing on direction change",
+      "motion": "subtle dolly and slow 10% speed ramp",
+      "base_prompt": "Cinematic sports cinematography, striker cutting inside towards goal, dynamic ball trajectory",
+      "prompt_modifier": "over-the-shoulder, player cutting inside, curved ball trajectory emphasized",
+      "render_settings": {
+        "aspect": "16:9",
+        "resolution": "1920x1080",
+        "guidance": 9.0,
+        "sampler": "DPM++",
+        "steps": 36
+      },
+      "output_pattern": "shot03_ots_{seed}.png"
+    },
+    {
+      "id": 4,
+      "label": "Close-up on strike",
+      "start": 3.5,
+      "end": 4.5,
+      "duration": 1.0,
+      "camera": "tight close-up on boot and ball at impact",
+      "motion": "fast shutter effect; crisp contact frame with micro-spark/dust",
+      "base_prompt": "Extreme close-up on boot striking ball with micro-details, high shutter clarity",
+      "prompt_modifier": "extreme close-up, high shutter clarity on contact, micro detail on boot and ball",
+      "render_settings": {
+        "aspect": "16:9",
+        "resolution": "1280x720",
+        "guidance": 10.0,
+        "sampler": "DPM++",
+        "steps": 40
+      },
+      "output_pattern": "shot04_close_impact_{seed}.png"
+    },
+    {
+      "id": 5,
+      "label": "Follow-through long shot",
+      "start": 4.5,
+      "end": 6.5,
+      "duration": 2.0,
+      "camera": "long follow arc as ball curves toward goal",
+      "motion": "smooth tracking on ball arc, crowd reaction blur in background",
+      "base_prompt": "Long follow shot showing ball curve toward goal with crowd bokeh",
+      "prompt_modifier": "long follow shot, ball curve emphasized, top-corner trajectory, crowd bokeh",
+      "render_settings": {
+        "aspect": "16:9",
+        "resolution": "1920x1080",
+        "guidance": 9.0,
+        "sampler": "DPM++",
+        "steps": 36
+      },
+      "output_pattern": "shot05_follow_{seed}.png"
+    },
+    {
+      "id": 6,
+      "label": "Goal frame and freeze",
+      "start": 6.5,
+      "end": 8.0,
+      "duration": 1.5,
+      "camera": "impact-frame at goal, slight slow-mo or freeze-frame",
+      "motion": "10% slow or brief freeze, crowd roar audio swell",
+      "base_prompt": "Goal-frame, high drama, freeze or slow-motion, scoreboard overlay optional",
+      "prompt_modifier": "goal-frame, high drama, freeze or slow-motion, scoreboard overlay optional",
+      "render_settings": {
+        "aspect": "16:9",
+        "resolution": "1920x1080",
+        "guidance": 8.5,
+        "sampler": "DPM++",
+        "steps": 30
+      },
+      "output_pattern": "shot06_goal_{seed}.png"
+    }
+  ],
+  "composition_instructions": {
+    "assemble": "Concatenate shots in order, match audio track to shot timestamps, apply 10% speed ramps where noted, apply filmic LUT and color grade",
+    "audio": {
+      "voiceover_lines": [
+        { "time": 0.5, "text": "Here he comes down the right — lightning fast!" },
+        { "time": 3.8, "text": "He cuts inside — a thunderous strike!" },
+        { "time": 5.5, "text": "It’s curling — heading for the top corner!" }
+      ],
+      "ambience": "stadium crowd loop, add whoosh SFX on impact and ball flight, mix at -6 to -10 dB under voice"
+    },
+    "output": {
+      "final_format": "mp4",
+      "codec": "h264",
+      "fps": 24,
+      "vertical_short": {
+        "crop": "center or reframe per-shot to 9:16",
+        "resolution": "1080x1920"
+      }
+    }
+  },
+  "notes": "Adjust seeds per-shot for variation. For wet pitch variation, add 'wet reflections' and 'raindrops' to each shot prompt_modifier. For golden hour, add 'warm sun shafts' and 'golden rim light'."
+}
