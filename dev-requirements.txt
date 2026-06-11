@@ -1,3 +1,21 @@
-git add -A
-git commit -m "Fix: Add comprehensive error logging to video generation"
-git push origin main
+# Development-only dependencies (testing and optional features)
+# Install with: pip install -r dev-requirements.txt
+# These are IN ADDITION TO requirements.txt for development work
+
+# Testing and quality
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.0.0
+flake8>=6.0.0
+
+# Optional TTS providers (for testing all TTS features)
+pyttsx3>=2.90
+# google-cloud-texttospeech>=2.13.0  # Uncomment for Google TTS support
+
+# Streamlit development tools
+streamlit-extras>=0.3.0
+
+# Optional performance tools
+# memory-profiler>=0.61.0
+# line-profiler>=4.0.0
+
