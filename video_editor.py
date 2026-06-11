@@ -1,19 +1,18 @@
 from typing import List
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
-
-def create_video(image_files: List[str], audio_path: str, output_path: str, prompt: str = None):
+def create_video(image_files: List[str], audio_path: str, output_path: str, prompt: str = None) -> str:
     """Create a video (MP4) from image files and an audio file when possible.
 
     Falls back to creating an animated GIF (no audio) if moviepy or its
-    dependencies are missing in the environment. The function returns the path 
-    to the created asset (MP4 or GIF).
+    dependencies are missing in the environment. Returns the path to the
+    created asset (MP4 or GIF).
     """
     moviepy_error = None
     has_moviepy = False
-    
+
     try:
         from moviepy.editor import ImageClip, concatenate_videoclips, AudioFileClip
         has_moviepy = True
@@ -22,7 +21,6 @@ def create_video(image_files: List[str], audio_path: str, output_path: str, prom
         print(f"[VIDEO_EDITOR] MoviePy import failed: {moviepy_error}", file=sys.stderr)
 
     if not image_files:
-        print(f"[VIDEO_EDITOR] No image files provided", file=sys.stderr)
         raise RuntimeError("No image files provided for video creation.")
 
     if has_moviepy:
@@ -33,10 +31,10 @@ def create_video(image_files: List[str], audio_path: str, output_path: str, prom
                 if os.path.exists(img):
                     clip = ImageClip(img).set_duration(duration_per_image)
                     clips.append(clip)
-            
+
             if not clips:
                 raise RuntimeError("No valid images found for video creation.")
-            
+
             print(f"[VIDEO_EDITOR] Creating video with {len(clips)} clips...", file=sys.stderr)
             final = concatenate_videoclips(clips, method="compose")
 
@@ -53,11 +51,11 @@ def create_video(image_files: List[str], audio_path: str, output_path: str, prom
             os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
             print(f"[VIDEO_EDITOR] Writing video to {output_path}", file=sys.stderr)
             final.write_videofile(
-                output_path, 
-                codec='libx264', 
-                audio_codec='aac', 
-                fps=24, 
-                verbose=False, 
+                output_path,
+                codec='libx264',
+                audio_codec='aac',
+                fps=24,
+                verbose=False,
                 logger=None,
                 preset='fast',
                 threads=2
@@ -75,9 +73,7 @@ def create_video(image_files: List[str], audio_path: str, output_path: str, prom
     try:
         from PIL import Image
     except Exception as e:
-        raise RuntimeError(
-            f"Neither moviepy nor Pillow are available. Cannot create video or GIF. Error: {e}"
-        )
+        raise RuntimeError(f"Neither moviepy nor Pillow are available. Cannot create video or GIF. Error: {e}")
 
     imgs = []
     for f in image_files:
@@ -94,8 +90,7 @@ def create_video(image_files: List[str], audio_path: str, output_path: str, prom
 
     gif_path = output_path.rsplit('.', 1)[0] + '.gif'
     os.makedirs(os.path.dirname(gif_path) or ".", exist_ok=True)
-    
-    print(f"[VIDEO_EDITOR] Creating GIF with {len(imgs)} frames at {gif_path}", file=sys.stderr)
+
     duration_ms = 2000
     imgs[0].save(gif_path, save_all=True, append_images=imgs[1:], duration=duration_ms, loop=0)
     print(f"[VIDEO_EDITOR] GIF creation successful: {gif_path}", file=sys.stderr)
